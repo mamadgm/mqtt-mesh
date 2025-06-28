@@ -7,35 +7,27 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ref } from "vue";
-import { Power, PersonStanding, CircleOff } from "lucide-vue-next";
-import { sendCommand } from "@/lib/api";
+import {
+  Power,
+  PersonStanding,
+  CircleOff,
+  BatteryWarning,
+} from "lucide-vue-next";
 
 const props = defineProps<{
+  runParent: (newState: string) => void;
   title: string;
-  code: number; // assumed to be MAC address or device ID
+  code: number;
   wifiActive: boolean;
   sensorActive: boolean;
-  currentMode : string
+  currentMode: string;
+  online: boolean;
 }>();
-
-const state = ref<string>(props.currentMode);
-
-const updateState = async (newState: "on" | "off" | "auto") => {
-  if (state.value === newState) return;
-  state.value = newState;
-  try {
-    const res = await sendCommand(String(props.code), { command: newState });
-    console.log("✅ Sent:", res);
-  } catch (err) {
-    console.error("❌ Command failed:", err);
-  }
-};
 </script>
 
 <template>
   <div
-    class="bg-gray-100 m-3 p-5 flex flex-col justify-center items-center rounded-xl shadow-xl border transition-all hover:shadow-2xl hover:scale-105"
+    class="bg-gray-100 m-1 p-3 flex flex-col justify-center items-center rounded-xl shadow-xl border transition-all hover:shadow-2xl hover:scale-105"
   >
     <div class="flex items-center text-center mb-4 w-full justify-center">
       <h3 class="text-lg font-semibold text-gray-800 text-center">
@@ -43,13 +35,22 @@ const updateState = async (newState: "on" | "off" | "auto") => {
       </h3>
     </div>
 
-    <DropdownMenu>
+    <div v-if="!props.online" class="relative group">
+      <BatteryWarning class="w-10 h-10 text-red-500 cursor-help" />
+      <div
+        class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-max max-w-[400px] bg-black text-white text-[15px] rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity"
+      >
+        دستگاه آفلاین است
+      </div>
+    </div>
+
+    <DropdownMenu v-else>
       <DropdownMenuTrigger as-child>
         <Button
           variant="outline"
           class="w-full justify-between text-gray-800 bg-white hover:bg-gray-50"
         >
-          {{ state }}
+          {{ props.currentMode }}
           <svg
             class="w-4 h-4 ml-2"
             fill="none"
@@ -68,23 +69,25 @@ const updateState = async (newState: "on" | "off" | "auto") => {
 
       <DropdownMenuContent class="w-56 text-right">
         <DropdownMenuLabel>وضعیت</DropdownMenuLabel>
-        <DropdownMenuItem @click="updateState('on') ">
+        <DropdownMenuItem @click="props.runParent('on')">
           ✅ روشن (On)
         </DropdownMenuItem>
-        <DropdownMenuItem @click="updateState('off')">
+        <DropdownMenuItem @click="props.runParent('off')">
           ❌ خاموش (Off)
         </DropdownMenuItem>
-        <DropdownMenuItem @click="updateState('auto')">
+        <DropdownMenuItem @click="props.runParent('auto')">
           ⚙️ خودکار (Auto)
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
 
     <div class="flex mt-4 space-x-6">
-      <Power :class="wifiActive ? 'text-green-500' : 'text-red-500'" class="w-8 h-8" />
+      <Power
+        :class="wifiActive ? 'text-green-500' : 'text-red-500'"
+        class="w-8 h-8"
+      />
       <PersonStanding v-if="sensorActive" class="w-8 h-8 text-blue-500" />
       <CircleOff v-else class="w-8 h-8 text-gray-400" />
     </div>
   </div>
 </template>
-

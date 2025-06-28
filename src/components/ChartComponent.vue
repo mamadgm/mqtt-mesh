@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { CurveType, Line } from "@unovis/ts";
+import { Line } from "@unovis/ts";
 import {
   VisCrosshair,
   VisLine,
@@ -16,44 +16,17 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 
-type Data = { hour: number; newValue: number; avgValue: number };
+type Data = { hour: number; avgValue: number };
 
-const data = ref<Data[]>([
-  { hour: 0, newValue: 25, avgValue: 40 },
-  { hour: 1, newValue: 32, avgValue: 20 },
-  { hour: 2, newValue: 45, avgValue: 15 },
-  { hour: 3, newValue: 15, avgValue: 30 },
-  { hour: 4, newValue: 50, avgValue: 42 },
-  { hour: 5, newValue: 10, avgValue: 15 },
-  { hour: 6, newValue: 35, avgValue: 25 },
-  { hour: 7, newValue: 28, avgValue: 36 },
-  { hour: 8, newValue: 60, avgValue: 20 },
-  { hour: 9, newValue: 20, avgValue: 40 },
-  { hour: 10, newValue: 40, avgValue: 31 },
-  { hour: 11, newValue: 30, avgValue: 42 },
-  { hour: 12, newValue: 55, avgValue: 40 },
-  { hour: 13, newValue: 15, avgValue: 25 },
-  { hour: 14, newValue: 45, avgValue: 22 },
-  { hour: 15, newValue: 25, avgValue: 30 },
-  { hour: 16, newValue: 5, avgValue: 10 },
-  { hour: 17, newValue: 35, avgValue: 32 },
-  { hour: 18, newValue: 20, avgValue: 25 },
-  { hour: 19, newValue: 40, avgValue: 35 },
-  { hour: 20, newValue: 30, avgValue: 28 },
-  { hour: 21, newValue: 15, avgValue: 20 },
-  { hour: 22, newValue: 50, avgValue: 45 },
-  { hour: 23, newValue: 5, avgValue: 8 },
-]);
+const props = defineProps<{
+  mydata: Data[];
+}>();
 
 const x = (d: Data) => d.hour;
 
 // Calculate dynamic y-axis range
-const minValue = ref(
-  Math.min(...data.value.map((d) => Math.min(d.newValue, d.avgValue))) - 2
-);
-const maxValue = ref(
-  Math.max(...data.value.map((d) => Math.max(d.newValue, d.avgValue))) + 2
-);
+const minValue = ref(0);
+const maxValue = ref(55);
 
 function template(d: Data) {
   return `
@@ -76,7 +49,7 @@ function computeLineOpacity(val: any, index: number) {
 </script>
 
 <template>
-  <Card>
+  <Card class="font-yekan">
     <CardHeader>
       <CardTitle class="text-black text-2xl">عملکرد 24 ساعته دستگاه</CardTitle>
       <CardDescription class="text-black text-xl">
@@ -87,7 +60,7 @@ function computeLineOpacity(val: any, index: number) {
       <div class="h-[200px]">
         <VisXYContainer
           height="200px"
-          :data="data"
+          :data="mydata"
           :margin="{
             top: 3,
             right: 3,

@@ -1,8 +1,5 @@
 import axios from "axios";
 
-// ==========================
-// 🔧 Axios Configuration
-// ==========================
 const API_BASE = "https://apisl.mammutepd.ir"; // Change this in production
 axios.defaults.baseURL = API_BASE;
 axios.defaults.headers.post["Content-Type"] = "application/json";
@@ -12,10 +9,6 @@ const token = localStorage.getItem("auth_access_token_smartlight");
 if (token) {
   axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 }
-
-// ==========================
-// 🔐 Interfaces
-// ==========================
 export interface Token {
   access_token: string;
   token_type: string;
@@ -42,11 +35,10 @@ export interface CommandPayload {
   target?: string;
   payload?: Record<string, any>;
 }
-
-// ==========================
-// 🔑 Auth
-// ==========================
-export async function login(username: string, password: string): Promise<Token> {
+export async function login(
+  username: string,
+  password: string
+): Promise<Token> {
   const params = new URLSearchParams();
   params.append("username", username);
   params.append("password", password);
@@ -56,12 +48,13 @@ export async function login(username: string, password: string): Promise<Token> 
   });
 
   // Set token in Axios and localStorage
-  axios.defaults.headers.common["Authorization"] = `Bearer ${res.data.access_token}`;
+  axios.defaults.headers.common[
+    "Authorization"
+  ] = `Bearer ${res.data.access_token}`;
   localStorage.setItem("auth_access_token_smartlight", res.data.access_token);
 
   return res.data;
 }
-
 
 export async function getStats(): Promise<any> {
   const res = await axios.get("/stats/");
@@ -77,10 +70,6 @@ export async function getOnlineDevices(): Promise<any> {
   const res = await axios.get("/devices/online/");
   return res.data;
 }
-
-// ==========================
-// 📤 Commands
-// ==========================
 export async function sendCommand(
   mac_address: string,
   payload: CommandPayload
@@ -88,3 +77,4 @@ export async function sendCommand(
   const res = await axios.post(`/send-command/${mac_address}`, payload);
   return res.data;
 }
+
