@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { Line } from "@unovis/ts";
 import {
   VisCrosshair,
@@ -24,9 +24,17 @@ const props = defineProps<{
 
 const x = (d: Data) => d.hour;
 
-// Calculate dynamic y-axis range
-const minValue = ref(0);
-const maxValue = ref(55);
+const minValue = computed(() => {
+  const values = props.mydata.map(d => d.avgValue);
+  const min = Math.min(...values);
+  return min - 2;
+});
+
+const maxValue = computed(() => {
+  const values = props.mydata.map(d => d.avgValue);
+  const max = Math.max(...values);
+  return max + 2;
+});
 
 function template(d: Data) {
   return `

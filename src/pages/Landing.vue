@@ -48,7 +48,7 @@ function scheduleStatsUpdate() {
   if (refreshTimeout) clearTimeout(refreshTimeout);
   refreshTimeout = setTimeout(async () => {
     await all();
-  }, 20000);
+  }, 5000);
 }
 
 const updateState = async (
@@ -62,15 +62,17 @@ const updateState = async (
     setTimeout(() => {
       all();
       scheduleStatsUpdate();
-    }, 1000);
+    }, 500);
   } catch (err) {
     console.error("❌ Command failed:", err);
   }
 };
 
+const allDevices = ref();
+
 async function fetchData() {
   try {
-    const allDevices = await getDevices();
+    allDevices.value = await getDevices();
     const onlineDevices = await getOnlineDevices();
     console.log("allDevices", allDevices);
     console.log("onlineDevices", onlineDevices);
@@ -93,7 +95,7 @@ async function fetchData() {
     console.log("✅ Online Node IDs:", onlineNodeIds);
 
     // Step 3: Map all devices and check if each mac_address exists in onlineNodeIds
-    devices.value = allDevices.map((d: any, index: number) => ({
+    devices.value = allDevices.value.map((d: any, index: number) => ({
       title: d.name || `Device ${index + 1}`,
       code: d.mac_address || index + 1,
       wifiActive: d.status,
@@ -102,7 +104,7 @@ async function fetchData() {
     }));
 
     // Optional: update your stats
-    stats.value.OffDevices = allDevices.length.toString();
+    stats.value.OffDevices = allDevices.value.length.toString();
   } catch (err) {
     console.error("❌ Failed to fetch devices:", err);
   }
