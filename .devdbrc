@@ -1,0 +1,6 @@
+[
+  {
+    "type": "sqlite",
+    "path": "/home/mamadgmu/Documents/Vue-prj/mqtt-mesh/device_monitor.db"
+  }
+]

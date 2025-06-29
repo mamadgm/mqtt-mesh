@@ -11,7 +11,7 @@ import {
   Power,
   PersonStanding,
   CircleOff,
-  BatteryWarning,
+  WifiOff,
 } from "lucide-vue-next";
 
 const props = defineProps<{
@@ -36,7 +36,7 @@ const props = defineProps<{
     </div>
 
     <div v-if="!props.online" class="relative group">
-      <BatteryWarning class="w-10 h-10 text-red-500 cursor-help" />
+      <WifiOff class="w-10 h-10 text-red-500 cursor-help" />
       <div
         class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-max max-w-[400px] bg-black text-white text-[15px] rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity"
       >
